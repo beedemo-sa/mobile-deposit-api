@@ -1,7 +1,7 @@
 def buildVersion = null
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5']]])
 stage 'Build'
-if(!env.JOB_NAME.startsWith("team-productivity/beedemo-sa/mobile-deposit-api/")) {
+if(!env.JOB_NAME.startsWith("beedemo-api/mobile-deposit-api/")) {
   echo 'only build for beedemo-sa org folder'
   error 'invalid project path'
 }
