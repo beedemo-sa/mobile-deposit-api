@@ -63,6 +63,13 @@ if(env.BRANCH_NAME=="master"){
         dir('target') {
             mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
         }
+        
+        stage 'Publish Docker Image'
+        sh "docker -v"
+        //use withDockerRegistry to make sure we are logged in to docker hub registry
+        withDockerRegistry(registry: [credentialsId: 'docker-registry-kmadel-login']) { 
+          mobileDepositApiImage.push()
+        }
 
         stage 'Deploy to Prod'
         try{
@@ -79,14 +86,6 @@ if(env.BRANCH_NAME=="master"){
             --data-urlencode hostName=prod \
             --data-urlencode imageName=cloudbees/mobile-deposit-api \
             --data-urlencode inspectData=\"\$(docker inspect $container.id)\""
-        
-        
-        stage 'Publish Docker Image'
-        sh "docker -v"
-        //use withDockerRegistry to make sure we are logged in to docker hub registry
-        withDockerRegistry(registry: [credentialsId: 'docker-registry-kmadel-login']) { 
-          mobileDepositApiImage.push()
-        }
      }
   }
 }
