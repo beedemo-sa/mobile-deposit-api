@@ -81,12 +81,14 @@ if(env.BRANCH_NAME=="master"){
         }
         //docker traceability rest call
         container = mobileDepositApiImage.run("--name mobile-deposit-api -p 8080:8080 --env='constraint:node==beedemo-swarm-master'")
-        sh "curl http://webhook:7b5782fe06249acd60dfcced4211887a@api-team.jenkins-latest.beedemo.net/docker-traceability/submitContainerStatus \
-            --data-urlencode status=deployed \
-            --data-urlencode hostName=prod-server-1 \
-            --data-urlencode hostName=prod \
-            --data-urlencode imageName=cloudbees/mobile-deposit-api \
-            --data-urlencode inspectData=\"\$(docker inspect $container.id)\""
+        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'webhook_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME']]) {
+          sh "curl http://$USERNAME:$PASSWORD@api-team.jenkins-latest.beedemo.net/docker-traceability/submitContainerStatus \
+             --data-urlencode status=deployed \
+             --data-urlencode hostName=prod-server-1 \
+             --data-urlencode hostName=prod \
+             --data-urlencode imageName=cloudbees/mobile-deposit-api \
+             --data-urlencode inspectData=\"\$(docker inspect $container.id)\""
+        }
      }
   }
 }
