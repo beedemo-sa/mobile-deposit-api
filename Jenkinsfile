@@ -82,7 +82,7 @@ if(env.BRANCH_NAME=="master"){
         //docker traceability rest call
         container = mobileDepositApiImage.run("--name mobile-deposit-api -p 8080:8080 --env='constraint:node==beedemo-swarm-master'")
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'webhook_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME']]) {
-          sh """curl http://$USERNAME:$PASSWORD@api-team.jenkins-latest.beedemo.net/docker-traceability/submitContainerStatus \
+          sh """curl http://${env.USERNAME}:${env.PASSWORD}@api-team.jenkins-latest.beedemo.net/docker-traceability/submitContainerStatus \
              --data-urlencode status=deployed \
              --data-urlencode hostName=prod-server-1 \
              --data-urlencode hostName=prod \
