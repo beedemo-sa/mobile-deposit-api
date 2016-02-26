@@ -10,7 +10,7 @@ node('docker-cloud') {
     docker.image('kmadel/maven:3.3.3-jdk-8').inside('-v /data:/data') {
         sh 'mvn -Dmaven.repo.local=/data/mvn/repo clean package'
     }
-    stash name: 'pom', includes: 'pom.xml, src, target'
+    stash name: 'pom', includes: 'pom.xml, **/target/*.jar'
 }
 
 if(!env.BRANCH_NAME.startsWith("PR")){
@@ -38,7 +38,7 @@ if(!env.BRANCH_NAME.startsWith("PR")){
     } catch (x) {
       currentBuild.result = "failed"
       hipchatSend color: 'RED', message: "${env.JOB_NAME} ${env.BUILD_NUMBER} status: ${currentBuild.result} <a href=\'${env.BUILD_URL}\'>Open</a>", room: '1613593', server: 'cloudbees.hipchat.com', token: 'A6YX8LxNc4wuNiWUn6qHacfO1bBSGXQ6E1lELi1z', v2enabled: true
-      mail body: '${env.JOB_NAME} has failed.  See <a href="${env.BUILD_URL}">logs</a> for details.', mimeType: 'text/html', subject: '${env.JOB_NAME} FAILURE', to: 'kmadel@cloudbees.com'
+      mail body: "Job '${env.JOB_NAME}' has failed.  See <a href=\"${env.BUILD_URL}\">logs</a> for details.", mimeType: 'text/html', subject: "${env.JOB_NAME} FAILURE", to: 'kmadel@cloudbees.com'
       throw x
     }
   }
