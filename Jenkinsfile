@@ -64,7 +64,9 @@ if(env.BRANCH_NAME=="master"){
         def mobileDepositApiImage
         //unstash Spring Boot JAR and Dockerfile
         unstash 'jar-dockerfile'
-        mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
+        dir('target') {
+            mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
+        }
         
         stage 'Publish Docker Image'
         sh "docker -v"
