@@ -8,9 +8,10 @@ if(!env.JOB_NAME.startsWith("beedemo-api/mobile-deposit-api/")) {
 node('docker-cloud') {
     checkout scm
     docker.image('kmadel/maven:3.3.3-jdk-8').inside('-v /data:/data') {
-        sh 'mvn -Dmaven.repo.local=/data/mvn/repo clean package'
+        sh "mvn -Dmaven.repo.local=/data/mvn/repo -DBUILD_NUMBER=${env.BUILD_NUMBER} -DBUILD_URL=${env.BUILD_URL} clean package"
     }
-    stash name: 'pom', includes: 'pom.xml, **/target/*.jar'
+    stash name: 'pom', includes: 'pom.xml'
+    stash name: 'jar-dockerfile', includes: '**/target/*.jar,**/target/Dockerfile'
 }
 
 if(!env.BRANCH_NAME.startsWith("PR")){
@@ -61,9 +62,9 @@ if(env.BRANCH_NAME=="master"){
 
         stage 'Build Docker Image'
         def mobileDepositApiImage
-        dir('target') {
-            mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
-        }
+        //unstash Spring Boot JAR and Dockerfile
+        unstash 'jar-dockerfile'
+        mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
         
         stage 'Publish Docker Image'
         sh "docker -v"
