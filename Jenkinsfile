@@ -68,13 +68,13 @@ if(env.BRANCH_NAME=="master"){
         //unstash Spring Boot JAR and Dockerfile
         unstash 'jar-dockerfile'
         dir('target') {
-            mobileDepositApiImage = docker.build "kmadel/mobile-deposit-api:${buildVersion}"
+            mobileDepositApiImage = docker.build "beedemo/mobile-deposit-api:${buildVersion}"
         }
         
         stage 'Publish Docker Image'
         sh "docker -v"
         //use withDockerRegistry to make sure we are logged in to docker hub registry
-        withDockerRegistry(registry: [credentialsId: 'docker-registry-kmadel-login']) { 
+        withDockerRegistry(registry: [credentialsId: 'docker-hub-beedemo']) { 
           mobileDepositApiImage.push()
         }
 
