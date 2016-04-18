@@ -1,5 +1,6 @@
 //AP: Andy was here with VCU
 def buildVersion = null
+def short_commit = null
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5']]])
 stage 'Build'
 if(!env.JOB_NAME.startsWith("beedemo-api/mobile-deposit-api/")) {
@@ -10,6 +11,7 @@ node('docker-cloud') {
     checkout scm
     sh('git rev-parse HEAD > GIT_COMMIT')
     git_commit=readFile('GIT_COMMIT')
+    short_commit=git_commit.take(7)
     docker.image('kmadel/maven:3.3.3-jdk-8').inside('-v /data:/data') {
         sh "mvn -Dmaven.repo.local=/data/mvn/repo -DGIT_COMMIT='${git_commit}' -DBUILD_NUMBER=${env.BUILD_NUMBER} -DBUILD_URL=${env.BUILD_URL} clean package"
     }
@@ -68,7 +70,7 @@ if(env.BRANCH_NAME=="master"){
         //unstash Spring Boot JAR and Dockerfile
         unstash 'jar-dockerfile'
         dir('target') {
-            mobileDepositApiImage = docker.build "beedemo/mobile-deposit-api:${buildVersion}"
+            mobileDepositApiImage = docker.build "beedemo/mobile-deposit-api:${env.BUILD_NUMBER}-${short_commit}"
         }
         
         stage 'Publish Docker Image'
