@@ -1,4 +1,4 @@
-package com.cloudbees.example.mobile.deposit.api;
+.package com.cloudbees.example.mobile.deposit.api;
 
 /**
  * Created by kmadel on 6/12/15.
@@ -25,7 +25,7 @@ public class DepositEndpoint {
 
         Deposit depositAccount = new Deposit();
         depositAccount.setAccountNumber("1234567890129876");
-        depositAccount.setBalance(new BigDecimal(57760.85));
+        depositAccount.setBalance(new BigDecimal.valueOf(57760.85));
         depositAccount.setVersion(version);
         depositAccount.setName("Free Checking");
 
